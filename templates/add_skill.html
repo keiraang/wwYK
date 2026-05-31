@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Add a Skill — wwYK{% endblock %}
+{% block content %}
+<div class="page">
+  <h1 class="page-title">Add a New Skill</h1>
+
+  <div class="card">
+    <p style="color:var(--text-mid); margin-bottom:1.2rem; font-size:0.95rem;">
+      Adding a skill earns you <strong>+{{ xp_gain }} XP</strong> and puts it on your profile for others to challenge.
+    </p>
+
+    <form method="post">
+      <div class="form-group">
+        <label for="name">Skill name</label>
+        <input type="text" id="name" name="name" placeholder="e.g. Python, Chess, Cooking pasta…" required />
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description <span style="font-weight:400; color:var(--text-mid);">(optional)</span></label>
+        <textarea id="description" name="description" placeholder="Briefly describe what you can do with this skill…"></textarea>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Add Skill → +{{ xp_gain }} XP</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

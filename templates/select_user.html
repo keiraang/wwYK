@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Who are you? — wwYK{% endblock %}
+{% block content %}
+<div class="select-user-wrap">
+  <div class="hero-qs">??</div>
+  <p class="select-title">Who are you?</p>
+  <form method="post" class="user-grid">
+    {% for u in users %}
+    <button type="submit" name="user_id" value="{{ u['id'] }}" class="user-btn">
+      <div class="av">{{ u['name'][0] }}</div>
+      {{ u['name'] }}
+      <span class="user-xp">{{ u['xp'] }} xp</span>
+    </button>
+    {% endfor %}
+  </form>
+</div>
+{% endblock %}

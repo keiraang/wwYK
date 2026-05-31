@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "wwyk",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["/Users/keiraang/Documents/GitHub/wwYK/app.py"],
+      "port": 5001
+    }
+  ]
+}

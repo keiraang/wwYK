@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Refresher — wwYK{% endblock %}
+{% block content %}
+<div class="page">
+  <h1 class="page-title">📖 Refresher</h1>
+
+  <div class="card">
+    <p style="color:var(--text-mid); margin-bottom:1.2rem; font-size:0.95rem;">
+      Test yourself on one of your skills. Pass and earn <strong>+10 XP</strong>.
+      Fail and lose <strong>15 XP</strong> — this is the only way your XP goes down.
+    </p>
+
+    {% if skills %}
+    <form method="post">
+      <div class="form-group">
+        <label for="skill_name">Which skill are you refreshing?</label>
+        <select id="skill_name" name="skill_name" required>
+          <option value="" disabled selected>Pick a skill…</option>
+          {% for s in skills %}
+          <option value="{{ s['name'] }}">{{ s['name'] }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>How did you do?</label>
+        <div class="radio-group">
+          <label class="radio-option">
+            <input type="radio" name="passed" value="yes" required />
+            ✅ Passed — I still know it well
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="passed" value="no" />
+            ❌ Failed — I've gotten rusty
+          </label>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Submit Refresher</button>
+    </form>
+    {% else %}
+    <p style="color:var(--text-mid);">
+      You don't have any skills yet.
+      <a href="{{ url_for('add_skill') }}" style="color:var(--green-dark); font-weight:700;">Add one first →</a>
+    </p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

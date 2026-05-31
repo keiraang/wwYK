@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% block title %}Challenge: {{ challenge['skill_name'] }} — wwYK{% endblock %}
+{% block content %}
+<div class="page">
+  <h1 class="page-title">⚔ Challenge</h1>
+
+  <div class="card">
+    <span class="challenge-badge badge-{{ challenge['status'] }}">{{ challenge['status'] }}</span>
+
+    <div class="challenge-meta">
+      <div class="meta-item">
+        <div class="meta-label">Skill</div>
+        <div class="meta-value">{{ challenge['skill_name'] }}</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Challenger</div>
+        <div class="meta-value">{{ challenger['name'] }}</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Opponent</div>
+        <div class="meta-value">{{ opponent['name'] }}</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Type</div>
+        <div class="meta-value">{{ challenge['challenge_type'].replace('_', ' ').title() }}</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Format</div>
+        <div class="meta-value">{{ challenge['format'] or '—' }}</div>
+      </div>
+      {% if challenge['stakes_desc'] %}
+      <div class="meta-item">
+        <div class="meta-label">Stakes</div>
+        <div class="meta-value">{{ challenge['stakes_desc'] }}</div>
+      </div>
+      {% endif %}
+      {% if challenge['stakes_points'] %}
+      <div class="meta-item">
+        <div class="meta-label">Points wagered</div>
+        <div class="meta-value">{{ challenge['stakes_points'] }} pts</div>
+      </div>
+      {% endif %}
+      {% if challenge['scheduled_at'] %}
+      <div class="meta-item">
+        <div class="meta-label">Scheduled for</div>
+        <div class="meta-value">{{ challenge['scheduled_at'] }}</div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Type explanation -->
+    <div style="background:var(--green-pale); border-radius:var(--radius-sm); padding:0.9rem 1.1rem; margin-bottom:1.5rem; font-size:0.92rem; color:var(--text-mid);">
+      {% if challenge['challenge_type'] == 'challenger_knows' %}
+        <strong>{{ challenger['name'] }}</strong> is testing <strong>{{ opponent['name'] }}</strong> on a skill they know.
+        If {{ opponent['name'] }} passes → they earn XP. If they fail → {{ challenger['name'] }} earns XP.
+      {% elif challenge['challenge_type'] == 'opponent_knows' %}
+        <strong>{{ challenger['name'] }}</strong> is calling <strong>{{ opponent['name'] }}'s</strong> bluff.
+        If {{ opponent['name'] }} proves they know it → they earn XP. If not → {{ challenger['name'] }} wins points.
+      {% else %}
+        Neither player knew this skill in advance — both studied and will be scored.
+        Score {{ challenge['skill_name'] }} at least {{ threshold }}% to earn XP.
+      {% endif %}
+    </div>
+
+    <!-- Result (completed) -->
+    {% if challenge['status'] == 'completed' and result %}
+    <div style="background:var(--green-dark); color:var(--white); border-radius:var(--radius-sm); padding:1rem 1.2rem;">
+      <strong>Result:</strong>
+      {% if result['winner'] == 'tie' %}
+        It's a tie!
+      {% elif result['winner'] == 'challenger' %}
+        🏆 {{ challenger['name'] }} wins!
+      {% else %}
+        🏆 {{ opponent['name'] }} wins!
+      {% endif %}
+      {% if result.get('challenger_score') is not none %}
+        <br><small>{{ challenger['name'] }}: {{ result['challenger_score'] }}% &nbsp;|&nbsp; {{ opponent['name'] }}: {{ result['opponent_score'] }}%</small>
+      {% endif %}
+    </div>
+
+    <!-- Resolve form (active challenges, only shown to participants) -->
+    {% elif challenge['status'] in ['active', 'pending'] and
+           current_user['id'] in [challenge['challenger_id'], challenge['opponent_id']] %}
+
+    <h3 style="margin-bottom:1rem;">Record the outcome</h3>
+    <form method="post" action="{{ url_for('resolve_challenge', challenge_id=challenge['id']) }}" class="outcome-form">
+
+      {% if challenge['challenge_type'] == 'neither_knows' %}
+        <div class="form-group">
+          <label>{{ challenger['name'] }}'s score (0–100)</label>
+          <input type="number" name="challenger_score" min="0" max="100" value="0" required />
+        </div>
+        <div class="form-group">
+          <label>{{ opponent['name'] }}'s score (0–100)</label>
+          <input type="number" name="opponent_score" min="0" max="100" value="0" required />
+        </div>
+      {% else %}
+        <div class="form-group">
+          <label>Did <strong>{{ opponent['name'] }}</strong> pass?</label>
+          <div class="radio-group">
+            <label class="radio-option">
+              <input type="radio" name="outcome" value="opponent_passed" required />
+              ✅ Yes — {{ opponent['name'] }} passed
+            </label>
+            <label class="radio-option">
+              <input type="radio" name="outcome" value="opponent_failed" />
+              ❌ No — {{ opponent['name'] }} failed
+            </label>
+          </div>
+        </div>
+      {% endif %}
+
+      <div>
+        <button type="submit" class="btn btn-primary">Submit Result</button>
+      </div>
+    </form>
+    {% endif %}
+  </div>
+
+  <a href="{{ url_for('home') }}" style="color:var(--green-dark); font-weight:700;">← Back to home</a>
+</div>
+{% endblock %}

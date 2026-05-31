@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}What Would YOU Know?{% endblock %}
+{% block content %}
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-qs">??</div>
+  <h1 class="hero-title">What Would<br>YOU Know?</h1>
+
+  <div class="menu-box">
+    <a href="{{ url_for('stats', user_id=current_user['id']) }}" class="menu-item">
+      View your Stats
+      <span class="menu-arrow">➜</span>
+    </a>
+    <a href="{{ url_for('add_skill') }}" class="menu-item">
+      Add a new skill
+      <span class="menu-arrow">➜</span>
+    </a>
+    <a href="#leaderboard" class="menu-item">
+      View leaderboard
+      <span class="menu-arrow">➜</span>
+    </a>
+  </div>
+</section>
+
+<!-- Leaderboard -->
+<section class="leaderboard-section" id="leaderboard">
+  <h2>Leaderboard</h2>
+
+  <div class="lb-grid">
+    <!-- Table -->
+    <table class="lb-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>XP</th>
+          <th>Points</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in users %}
+        <tr {% if u['id'] == current_user['id'] %}class="is-me"{% endif %}>
+          <td><span class="rank-badge">{{ loop.index }}</span></td>
+          <td>{{ u['name'] }}</td>
+          <td>{{ u['xp'] }} xp</td>
+          <td>{{ u['points'] }} pts</td>
+          <td>
+            <a class="see-stats-link" href="{{ url_for('stats', user_id=u['id']) }}">
+              See Stats ➜
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <!-- Podium chart — top 3 -->
+    {% set top3 = users[:3] %}
+    {% if top3|length == 3 %}
+    {% set max_xp = top3[0]['xp'] if top3[0]['xp'] > 0 else 1 %}
+    <div class="podium">
+      {# Order: 2nd, 1st, 3rd #}
+      {% set order = [top3[1], top3[0], top3[2]] %}
+      {% set heights = [130, 170, 100] %}
+      {% for i in range(3) %}
+      {% set u = order[i] %}
+      <div class="podium-col">
+        <span class="podium-star">⭐</span>
+        <span class="podium-name">{{ u['name'] }}</span>
+        <div class="podium-bar" style="height: {{ heights[i] }}px;"></div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+{% endblock %}

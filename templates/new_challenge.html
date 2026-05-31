@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}New Challenge — wwYK{% endblock %}
+{% block content %}
+<div class="page">
+  <h1 class="page-title">⚔ Challenge Someone</h1>
+
+  <div class="card">
+    <form method="post">
+
+      <!-- Opponent -->
+      <div class="form-group">
+        <label for="opponent_id">Who are you challenging?</label>
+        <select id="opponent_id" name="opponent_id" required>
+          <option value="" disabled selected>Pick a player…</option>
+          {% for u in users %}
+          <option value="{{ u['id'] }}">{{ u['name'] }} ({{ u['xp'] }} XP)</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- Skill -->
+      <div class="form-group">
+        <label for="skill_name">Skill being challenged</label>
+        <input type="text" id="skill_name" name="skill_name"
+               placeholder="e.g. Python, Chess, Cooking pasta…" required />
+      </div>
+
+      <!-- Challenge type -->
+      <div class="form-group">
+        <label>Challenge type</label>
+        <div class="type-cards">
+
+          <label class="type-card">
+            <input type="radio" name="challenge_type" value="challenger_knows" checked />
+            <div class="type-card-title">I know it</div>
+            <div class="type-card-desc">
+              You know this skill and are testing the opponent on it.
+              If they pass, they earn XP. If they fail, you do.
+            </div>
+          </label>
+
+          <label class="type-card">
+            <input type="radio" name="challenge_type" value="opponent_knows" />
+            <div class="type-card-title">They claim it</div>
+            <div class="type-card-desc">
+              You're calling their bluff on a skill they say they have.
+              If they pass, they keep their rep. If they fail, you win points.
+            </div>
+          </label>
+
+          <label class="type-card">
+            <input type="radio" name="challenge_type" value="neither_knows" />
+            <div class="type-card-title">Neither knows</div>
+            <div class="type-card-desc">
+              Set a future date — both of you study and both are scored.
+              Hit the threshold and everyone earns XP.
+            </div>
+          </label>
+
+        </div>
+      </div>
+
+      <!-- Format -->
+      <div class="form-group">
+        <label for="format">Challenge format</label>
+        <select id="format" name="format">
+          <option value="quiz">Quiz (written questions)</option>
+          <option value="oral">Oral / live demonstration</option>
+          <option value="project">Mini project / build challenge</option>
+          <option value="debate">Debate / explain-it</option>
+        </select>
+      </div>
+
+      <!-- Stakes -->
+      <div class="form-group">
+        <label for="stakes_desc">Stakes <span style="font-weight:400; color:var(--text-mid);">(optional)</span></label>
+        <input type="text" id="stakes_desc" name="stakes_desc"
+               placeholder="e.g. Loser does dishes, loser gives winner points…" />
+      </div>
+
+      <div class="form-group">
+        <label for="stakes_points">Points wagered <span style="font-weight:400; color:var(--text-mid);">(0 = none)</span></label>
+        <input type="number" id="stakes_points" name="stakes_points" value="0" min="0" />
+      </div>
+
+      <!-- Scheduled date (for neither_knows) -->
+      <div class="form-group" id="scheduled-group" style="display:none;">
+        <label for="scheduled_at">Scheduled date &amp; time</label>
+        <input type="datetime-local" id="scheduled_at" name="scheduled_at" />
+      </div>
+
+      <button type="submit" class="btn btn-primary">Create Challenge →</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  const radios = document.querySelectorAll('input[name="challenge_type"]');
+  const schedGroup = document.getElementById('scheduled-group');
+  radios.forEach(r => r.addEventListener('change', () => {
+    schedGroup.style.display = r.value === 'neither_knows' && r.checked ? 'flex' : 'none';
+  }));
+</script>
+{% endblock %}
